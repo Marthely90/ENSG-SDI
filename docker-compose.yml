@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  portainer:
+    image: portainer/portainer-ce:alpine
+    container_name: portainer
+    command: -H unix:///var/run/docker.sock
+    expose:
+      - "9000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "portainer_data:/data"
+    restart: always
+    networks:
+      - revproxy-apps
+
+  db:
+    image: postgres:latest
+    container_name: my-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    expose:
+      - "5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - revproxy-apps
+
+volumes:
+  portainer_data:
+  db_data:
+
+networks:
+  revproxy-apps:
+    name: revproxy-apps
+    external: true
+  
